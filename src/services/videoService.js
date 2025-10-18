@@ -12,6 +12,24 @@ export const getVideosByCategory = async (categoryNo, page = DEFAULT_PAGE, limit
         params: { page, limit }
       }
     );
+    
+    // The API returns paginated data with structure: { data: { docs: [...], totalDocs, page, ... } }
+    // We need to extract the videos from response.data.docs and preserve pagination info
+    if (response.success && response.data) {
+      return {
+        ...response,
+        videos: response.data.docs || [],
+        pagination: {
+          totalDocs: response.data.totalDocs,
+          limit: response.data.limit,
+          page: response.data.page,
+          totalPages: response.data.totalPages,
+          hasNextPage: response.data.hasNextPage,
+          hasPrevPage: response.data.hasPrevPage,
+        }
+      };
+    }
+    
     return response;
   } catch (error) {
     console.error('Error fetching videos by category:', error);
@@ -56,6 +74,23 @@ export const getAllVideos = async (page = DEFAULT_PAGE, limit = DEFAULT_PAGE_SIZ
     const response = await get('/videos/get-all-videos', {
       params: { page, limit }
     });
+    
+    // Handle paginated response structure if present
+    if (response.success && response.data && response.data.docs) {
+      return {
+        ...response,
+        videos: response.data.docs || [],
+        pagination: {
+          totalDocs: response.data.totalDocs,
+          limit: response.data.limit,
+          page: response.data.page,
+          totalPages: response.data.totalPages,
+          hasNextPage: response.data.hasNextPage,
+          hasPrevPage: response.data.hasPrevPage,
+        }
+      };
+    }
+    
     return response;
   } catch (error) {
     console.error('Error fetching all videos:', error);
