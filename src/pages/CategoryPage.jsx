@@ -37,9 +37,10 @@ const CategoryPage = () => {
 
       // Fetch videos
       const videosResponse = await getVideosByCategory(categoryNo, 1, 30);
-      if (videosResponse.success && videosResponse.data) {
-        setVideos(videosResponse.data);
-        setHasMore(videosResponse.data.length === 30);
+      if (videosResponse.success && videosResponse.videos) {
+        setVideos(videosResponse.videos);
+        // Use pagination metadata from API response
+        setHasMore(videosResponse.pagination?.hasNextPage || false);
       }
     } catch (err) {
       setError('Failed to load category videos');
@@ -55,9 +56,10 @@ const CategoryPage = () => {
       const nextPage = page + 1;
       const response = await getVideosByCategory(categoryNo, nextPage, 30);
       
-      if (response.success && response.data) {
-        setVideos(prev => [...prev, ...response.data]);
-        setHasMore(response.data.length === 30);
+      if (response.success && response.videos) {
+        setVideos(prev => [...prev, ...response.videos]);
+        // Use pagination metadata from API response
+        setHasMore(response.pagination?.hasNextPage || false);
         setPage(nextPage);
       }
     } catch (err) {

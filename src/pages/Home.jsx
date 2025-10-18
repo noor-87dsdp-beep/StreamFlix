@@ -57,14 +57,15 @@ const Home = () => {
       setVideosLoading(true);
       const response = await getVideosByCategory(categoryNo, pageNum, 30);
       
-      if (response.success && response.data) {
+      if (response.success && response.videos) {
         if (reset) {
-          setVideos(response.data);
+          setVideos(response.videos);
         } else {
-          setVideos(prev => [...prev, ...response.data]);
+          setVideos(prev => [...prev, ...response.videos]);
         }
         
-        setHasMore(response.data.length === 30);
+        // Use pagination metadata from API response
+        setHasMore(response.pagination?.hasNextPage || false);
         setPage(pageNum);
       }
     } catch (err) {
